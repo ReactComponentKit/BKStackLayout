@@ -136,10 +136,10 @@ public class StackLayout: SLView, StackLayoutUpdatable {
                 #endif
             case .bottom:
                 return .bottom
-            #if os(iOS)
+                #if os(iOS)
             case .fill:
                 return .fill
-            #endif
+                #endif
             case .firstBaseline:
                 return .firstBaseline
             case .lastBaseline:
@@ -168,10 +168,10 @@ public class StackLayout: SLView, StackLayoutUpdatable {
                 #endif
             case .right:
                 return .trailing
-            #if os(iOS)
+                #if os(iOS)
             case .fill:
                 return .fill
-            #endif
+                #endif
             }
         }
     }
