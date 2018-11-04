@@ -19,11 +19,17 @@ public typealias SLView = UIView
 public typealias SLStackView = UIStackView
 public typealias SLColor = UIColor
 public typealias SLEdgeInsets = UIEdgeInsets
+public typealias SLLayoutPriority = UILayoutPriority
+public typealias SLAlignment = UIStackView.Alignment
+public typealias SLScreen = UIScreen
 #else
 public typealias SLView = NSView
 public typealias SLStackView = NSStackView
 public typealias SLColor = NSColor
 public typealias SLEdgeInsets = NSEdgeInsets
+public typealias SLLayoutPriority = NSLayoutPriority
+public typealias SLAlignment = NSLayoutConstraint.Attribute
+public typealias SLScreen = NSScreen
 #endif
 
 fileprivate protocol StackLayoutUpdatable {
@@ -116,7 +122,7 @@ public class StackLayout: SLView, StackLayoutUpdatable {
         case firstBaseline
         case lastBaseline
         
-        fileprivate var toAlignment: SLStackView.Alignment {
+        fileprivate var toAlignment: SLAlignment {
             switch self {
             case .top:
                 return .top
@@ -140,7 +146,7 @@ public class StackLayout: SLView, StackLayoutUpdatable {
         case right
         case fill
         
-        fileprivate var toAlignment: SLStackView.Alignment {
+        fileprivate var toAlignment: SLAlignment {
             switch self {
             case .left:
                 return .leading
@@ -239,17 +245,17 @@ extension StackLayout {
     public func add(views: [SLView]) -> StackLayout {
         self.layoutViews = views
         self.layoutViews.filter { $0 is StackLayoutStretchable == false }.forEach {
-            $0.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 1000), for: orientation == .vertical ? .vertical : .horizontal)
+            $0.setContentCompressionResistancePriority(SLLayoutPriority(rawValue: 1000), for: orientation == .vertical ? .vertical : .horizontal)
         }
         return self
     }
     
     public func flex(bgColor: SLColor = .clear) -> SLView {
-        let width = orientation == .vertical ? 1 : UIScreen.main.bounds.width
-        let height = orientation == .vertical ? UIScreen.main.bounds.height : 1
+        let width = orientation == .vertical ? 1 : SLScreen.main.bounds.width
+        let height = orientation == .vertical ? SLScreen.main.bounds.height : 1
         let v = StackFlexSpacingView(width: width, height: height)
         v.backgroundColor = bgColor
-        v.setContentCompressionResistancePriority(UILayoutPriority(rawValue: 999), for: orientation == .vertical ? .vertical : .horizontal)
+        v.setContentCompressionResistancePriority(SLLayoutPriority(rawValue: 999), for: orientation == .vertical ? .vertical : .horizontal)
         return v
     }
     
