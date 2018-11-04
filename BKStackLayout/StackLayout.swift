@@ -21,15 +21,15 @@ public typealias SLColor = UIColor
 public typealias SLEdgeInsets = UIEdgeInsets
 public typealias SLLayoutPriority = UILayoutPriority
 public typealias SLAlignment = UIStackView.Alignment
-public typealias SLScreen = UIScreen
+public typealias SLAxis = NSLayoutConstraint.Axis
 #else
 public typealias SLView = NSView
 public typealias SLStackView = NSStackView
 public typealias SLColor = NSColor
 public typealias SLEdgeInsets = NSEdgeInsets
-public typealias SLLayoutPriority = NSLayoutPriority
+public typealias SLLayoutPriority = NSLayoutConstraint.Priority
 public typealias SLAlignment = NSLayoutConstraint.Attribute
-public typealias SLScreen = NSScreen
+public typealias SLAxis = NSUserInterfaceLayoutOrientation
 #endif
 
 fileprivate protocol StackLayoutUpdatable {
@@ -104,7 +104,7 @@ public class StackLayout: SLView, StackLayoutUpdatable {
         case vertical
         case horizontal
         
-        fileprivate var toAxis: NSLayoutConstraint.Axis {
+        fileprivate var toAxis: SLAxis {
             switch self {
             case .vertical:
                 return .vertical
@@ -118,7 +118,9 @@ public class StackLayout: SLView, StackLayoutUpdatable {
         case top
         case center
         case bottom
+        #if os(iOS)
         case fill
+        #endif
         case firstBaseline
         case lastBaseline
         
@@ -127,11 +129,17 @@ public class StackLayout: SLView, StackLayoutUpdatable {
             case .top:
                 return .top
             case .center:
+                #if os(iOS)
                 return .center
+                #else
+                return .centerY
+                #endif
             case .bottom:
                 return .bottom
+            #if os(iOS)
             case .fill:
                 return .fill
+            #endif
             case .firstBaseline:
                 return .firstBaseline
             case .lastBaseline:
@@ -144,18 +152,26 @@ public class StackLayout: SLView, StackLayoutUpdatable {
         case left
         case center
         case right
+        #if os(iOS)
         case fill
+        #endif
         
         fileprivate var toAlignment: SLAlignment {
             switch self {
             case .left:
                 return .leading
             case .center:
+                #if os(iOS)
                 return .center
+                #else
+                return .centerX
+                #endif
             case .right:
                 return .trailing
+            #if os(iOS)
             case .fill:
                 return .fill
+            #endif
             }
         }
     }
@@ -251,23 +267,45 @@ extension StackLayout {
     }
     
     public func flex(bgColor: SLColor = .clear) -> SLView {
-        let width = orientation == .vertical ? 1 : SLScreen.main.bounds.width
-        let height = orientation == .vertical ? SLScreen.main.bounds.height : 1
+        #if os(iOS)
+        let width = orientation == .vertical ? 1 : UIScreen.main.bounds.width
+        let height = orientation == .vertical ? UIScreen.main.bounds.height : 1
+        #else
+        let width: CGFloat = 0
+        let height: CGFloat = 0
+        #endif
         let v = StackFlexSpacingView(width: width, height: height)
+        
+        #if os(iOS)
         v.backgroundColor = bgColor
+        #else
+        v.wantsLayer = true
+        v.layer?.backgroundColor = bgColor.cgColor
+        #endif
+        
         v.setContentCompressionResistancePriority(SLLayoutPriority(rawValue: 999), for: orientation == .vertical ? .vertical : .horizontal)
         return v
     }
     
     public func fixed(w width: CGFloat = 1, h height: CGFloat = 1, bgColor: SLColor = .clear) -> SLView {
         let v = StackFixedSpacingView(width: width, height: height)
+        #if os(iOS)
         v.backgroundColor = bgColor
+        #else
+        v.wantsLayer = true
+        v.layer?.backgroundColor = bgColor.cgColor
+        #endif
         return v
     }
     
     public func wrap(_ view: SLView, w width: CGFloat = 1, h height: CGFloat = 1, bgColor: SLColor = .clear) -> SLView {
         let v = StackWrapView(view: view, width: width, height: height)
+        #if os(iOS)
         v.backgroundColor = bgColor
+        #else
+        v.wantsLayer = true
+        v.layer?.backgroundColor = bgColor.cgColor
+        #endif
         return v
     }
 }
@@ -362,8 +400,18 @@ extension StackLayout {
             let arrangedView = layoutViews.filter { return $0.intrinsicContentSize.width != 0 && $0.intrinsicContentSize.height != 0 }
             arrangedView.forEach { $0.removeFromSuperview() }
             
+            #if os(iOS)
             let sv = SLStackView(arrangedSubviews: arrangedView)
+            #else
+            let sv = SLStackView(views: arrangedView)
+            #endif
+            
+            #if os(iOS)
             sv.axis = self.orientation.toAxis
+            #else
+            sv.orientation = self.orientation.toAxis
+            #endif
+            
             sv.spacing = self.spacing
             sv.alignment = self.orientation == .vertical ? horizontalAlignment.toAlignment : verticalAlignment.toAlignment
             sv.distribution = self.distribution.toDistribution
