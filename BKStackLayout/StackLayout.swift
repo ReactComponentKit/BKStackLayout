@@ -364,8 +364,8 @@ extension StackLayout {
 
 extension StackLayout {
     @discardableResult
-    public func align(vertial: VerticalAlignment) -> StackLayout {
-        self.verticalAlignment = vertial
+    public func align(vertical: VerticalAlignment) -> StackLayout {
+        self.verticalAlignment = vertical
         return self
     }
     

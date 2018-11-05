@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "BKStackLayout"
-  s.version      = "1.0.1"
+  s.version      = "1.0.2"
   s.summary      = "BKStackLayout is a tiny utility library wrapping UIStackView or NSStackView."
   s.homepage     = "https://github.com/ReactComponentKit/BKStackLayout"
   s.license      = "MIT"
