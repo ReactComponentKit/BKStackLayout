@@ -62,7 +62,7 @@ class ViewController: NSViewController {
             
             $0.horizontal {
                 $0.add(views: [$0.flex(), $0.wrap(self.label4, w: 200), $0.flex(), $0.fixed(w: 100, bgColor: .red)])
-                $0.align(vertial: .top)
+                $0.align(vertical: .top)
                 $0.spacing(10)
                 $0.distribute(.fill)
             }

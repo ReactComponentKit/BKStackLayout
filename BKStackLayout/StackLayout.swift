@@ -397,13 +397,12 @@ extension StackLayout {
             }
         } else {
             
-            let arrangedView = layoutViews.filter { return $0.intrinsicContentSize.width != 0 && $0.intrinsicContentSize.height != 0 }
-            arrangedView.forEach { $0.removeFromSuperview() }
+            layoutViews.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
             
             #if os(iOS)
-            let sv = SLStackView(arrangedSubviews: arrangedView)
+            let sv = SLStackView(arrangedSubviews: layoutViews)
             #else
-            let sv = SLStackView(views: arrangedView)
+            let sv = SLStackView(views: layoutViews)
             #endif
             
             #if os(iOS)
